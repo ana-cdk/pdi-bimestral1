@@ -13,6 +13,7 @@ Este é um projeto de processamento digital de imagens desenvolvido em Python co
 
 # Requisitos de Sistema
 Python 3.x
+
 Bibliotecas: Tkinter, OpenCV, Pillow
 
 # Instalação
