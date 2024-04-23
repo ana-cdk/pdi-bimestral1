@@ -4,25 +4,26 @@ Projeto desenvolvido para o trabalho bimestral da matéria optativa de Processam
 Este é um projeto de processamento digital de imagens desenvolvido em Python com as bibliotecas Tkinter, OpenCV e Pillow. O objetivo do projeto é permitir que os usuários realizem diversas transformações em imagens, como conversões de cor, aplicação de filtros, detecção de bordas, binarização e morfologia matemática.
 
 # Funcionalidades
-Abrir uma imagem a partir do sistema de arquivos
-Aplicar transformações na imagem, como conversão de cores, filtros, detecção de bordas, binarização e morfologia matemática
-Visualizar a imagem original e a imagem após as transformações em janelas separadas
-Excluir transformações realizadas anteriormente
-Salvar a imagem resultante após as transformações
+* Abrir uma imagem a partir do sistema de arquivos
+* Aplicar transformações na imagem, como conversão de cores, filtros, detecção de bordas, binarização e morfologia matemática
+* Visualizar a imagem original e a imagem após as transformações em janelas separadas
+* Excluir transformações realizadas anteriormente
+* Salvar a imagem resultante após as transformações
 
 # Requisitos de Sistema
 Python 3.x
 Bibliotecas: Tkinter, OpenCV, Pillow
 
 # Instalação
-Clone o repositório do projeto:
+### Clone o repositório do projeto:
 git clone https://github.com/seu-usuario/nome-do-repositorio.git
-Instale as dependências:
+
+### Instale as dependências:
 pip install -r requirements.txt
 
 # Como Executar
-Navegue até o diretório do projeto:
+### Navegue até o diretório do projeto:
 cd nome-do-repositorio
 
-Execute o arquivo principal do projeto:
+### Execute o arquivo principal do projeto:
 python main.py
