@@ -16,7 +16,7 @@ Bibliotecas: Tkinter, OpenCV, Pillow
 
 # Instalação
 ### Clone o repositório do projeto:
-git clone https://github.com/seu-usuario/nome-do-repositorio.git
+git clone https://github.com/ana-cdk/pdi-bimestral1.git
 
 ### Instale as dependências:
 pip install -r requirements.txt
