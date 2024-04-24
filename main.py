@@ -4,6 +4,7 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import numpy as np
+from tkinter.simpledialog import askinteger
 
 tela = Tk()
 tela.title("Trabalho Bimestral PDI")
@@ -57,19 +58,25 @@ def atualizar_imagem_atual():
     global imagem_atual
     imagem_atual = imagem_cv.copy()
     for transformacao in transformacoes_realizadas:
-        if transformacao == "Conversão de cores BGR -> GRAY":
+        if transformacao.startswith("Conversão de cores BGR -> GRAY"):
             if len(imagem_atual.shape) > 2 and imagem_atual.shape[2] > 1:
                 imagem_atual = cv.cvtColor(imagem_atual, cv.COLOR_BGR2GRAY)
-        elif transformacao == "Filtro gaussiano - Blur":
+        elif transformacao.startswith("Filtro gaussiano - Blur"):
             if len(imagem_atual.shape) > 2 and imagem_atual.shape[2] > 1:
-                imagem_atual = cv.GaussianBlur(imagem_atual, (5, 5), 0)
-        elif transformacao == "Detector de borda - Canny":
-            imagem_atual = cv.Canny(imagem_atual, 50, 200)
-        elif transformacao == "Binarização":
-            _, imagem_atual = cv.threshold(imagem_atual, 127, 255, cv.THRESH_BINARY)
-        elif transformacao == "Morfologia matemática - Erosão":
+                desvio_padrao = int(transformacao.split(":")[1].strip())
+                imagem_atual = cv.GaussianBlur(imagem_atual, (5, 5), desvio_padrao)
+        elif transformacao.startswith("Detector de borda - Canny"):
+            limiares = transformacao.split("(")[-1].split(")")[0].split(",")
+            limiar_inferior = int(limiares[0].strip())
+            limiar_superior = int(limiares[1].strip())
+            imagem_atual = cv.Canny(imagem_atual, limiar_inferior, limiar_superior)
+        elif transformacao.startswith("Binarização"):
+            limiar = int(transformacao.split(":")[1].strip())
+            _, imagem_atual = cv.threshold(imagem_atual, limiar, 255, cv.THRESH_BINARY)
+        elif transformacao.startswith("Morfologia matemática - Erosão"):
+            iteracoes = int(transformacao.split(":")[1].strip())
             kernel = np.ones((5, 5), np.uint8)
-            imagem_atual = cv.erode(imagem_atual, kernel, iterations=1)
+            imagem_atual = cv.erode(imagem_atual, kernel, iterations=iteracoes)
 
 def excluir_transformacao():
     global imagem_original
@@ -146,51 +153,59 @@ def converter_img():
             adicionar_transformacao("Conversão de cores BGR -> GRAY")
         else:
             messagebox.showinfo("Erro", "A imagem atual não pode ser convertida para escala de cinza pois já está convertida.")
-
 def filtro_img():
     global imagem_atual
     if imagem_atual is None:
         messagebox.showinfo("Erro", "Escolha uma imagem primeiro")
     else:
-        edit = cv.GaussianBlur(imagem_atual, (5, 5), 0)
-        imagem_atual = edit  # Atualiza a imagem atual para a imagem filtrada
-        edit_pil = Image.fromarray(edit)
-        redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
-        adicionar_transformacao("Filtro gaussiano - Blur")
+        desvio_padrao = askinteger("Desvio Padrão", "Digite o valor do desvio padrão:", initialvalue=0)
+        if desvio_padrao is not None:
+            edit = cv.GaussianBlur(imagem_atual, (5, 5), desvio_padrao)
+            imagem_atual = edit
+            edit_pil = Image.fromarray(edit)
+            redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
+            adicionar_transformacao(f"Filtro gaussiano - Blur /Desvio padrão: {desvio_padrao}")
 
 def detector_borda():
     global imagem_atual
     if imagem_atual is None:
         messagebox.showinfo("Erro", "Escolha uma imagem primeiro")
     else:
-        edit = cv.Canny(imagem_atual, 50, 200)
-        imagem_atual = edit  # Atualiza a imagem atual para a imagem filtrada
-        edit_pil = Image.fromarray(edit)
-        redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
-        adicionar_transformacao("Detector de borda - Canny")
+        limiar_inferior = askinteger("Limiar Inferior", "Digite o valor do limiar inferior:", initialvalue=50)
+        limiar_superior = askinteger("Limiar Superior", "Digite o valor do limiar superior:", initialvalue=200)
+        if limiar_inferior is not None and limiar_superior is not None:
+            edit = cv.Canny(imagem_atual, limiar_inferior, limiar_superior)
+            imagem_atual = edit
+            edit_pil = Image.fromarray(edit)
+            redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
+            adicionar_transformacao(f"Detector de borda - Canny ({limiar_inferior}, {limiar_superior})")
 
 def binarizar_img():
     global imagem_atual
     if imagem_atual is None:
         messagebox.showinfo("Erro", "Escolha uma imagem primeiro")
     else:
-        _, edit = cv.threshold(imagem_atual, 127, 255, cv.THRESH_BINARY)
-        imagem_atual = edit  # Atualiza a imagem atual para a imagem binarizada
-        edit_pil = Image.fromarray(edit)
-        redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
-        adicionar_transformacao("Binarização")
+        limiar = askinteger("Limiar", "Digite o valor do limiar:", initialvalue=127)
+        if limiar is not None:
+            _, edit = cv.threshold(imagem_atual, limiar, 255, cv.THRESH_BINARY)
+            imagem_atual = edit
+            edit_pil = Image.fromarray(edit)
+            redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
+            adicionar_transformacao(f"Binarização / Limiar: {limiar}")
 
 def morfologia():
     global imagem_atual
     if imagem_atual is None:
         messagebox.showinfo("Erro", "Escolha uma imagem primeiro")
     else:
-        kernel = np.ones((5,5), np.uint8)
-        edit = cv.erode(imagem_atual, kernel, iterations=1)
-        imagem_atual = edit  # Atualiza a imagem atual para a imagem binarizada
-        edit_pil = Image.fromarray(edit)
-        redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
-        adicionar_transformacao("Morfologia matemática - Erosão")
+        iteracoes = askinteger("Iterações", "Digite o número de iterações:", initialvalue=1)
+        if iteracoes is not None:
+            kernel = np.ones((5,5), np.uint8)
+            edit = cv.erode(imagem_atual, kernel, iterations=iteracoes)
+            imagem_atual = edit
+            edit_pil = Image.fromarray(edit)
+            redimensionar_imagem_para_frame(edit_pil, frame_superior_direito, largura_frame, altura_frame)
+            adicionar_transformacao(f"Morfologia matemática - Erosão / Iterações: {iteracoes}")
 
 def barra_de_ferramentas():
     toolbar = Menu(tela)
