@@ -88,7 +88,6 @@ def excluir_transformacao():
     imagem_pil = Image.fromarray(imagem_atual)
     redimensionar_imagem_para_frame(imagem_pil, frame_superior_direito, largura_frame, altura_frame)
 
-
 def redimensionar_imagem_para_frame(imagem_pil, frame, largura_frame, altura_frame):
     proporcao = min(largura_frame / imagem_pil.width, altura_frame / imagem_pil.height)
     nova_largura = int(imagem_pil.width * proporcao)
@@ -153,6 +152,7 @@ def converter_img():
             adicionar_transformacao("Conversão de cores BGR -> GRAY")
         else:
             messagebox.showinfo("Erro", "A imagem atual não pode ser convertida para escala de cinza pois já está convertida.")
+
 def filtro_img():
     global imagem_atual
     if imagem_atual is None:
@@ -241,7 +241,7 @@ def botoes_pdi():
 def botoes_lista():
 
     # Carregar a imagem do ícone
-    icone = Image.open("D:/Faculdade/PDI/Trabalho bimestral 1/icons/trash.png")
+    icone = Image.open("./icons/trash.png")
     icone = icone.resize((25, 25))  # Redimensionar o ícone se necessário
     icone = ImageTk.PhotoImage(icone)
     # Botão de excluir
